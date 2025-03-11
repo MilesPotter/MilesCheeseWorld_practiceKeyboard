@@ -2,11 +2,13 @@
 //Add Java libraries needed for the game
 
 import java.awt.Graphics2D;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.*;
 
-public class CheeseWorld implements Runnable {
+public class CheeseWorld implements Runnable, KeyListener {
 
     //Variable Definition Section
 
@@ -25,6 +27,8 @@ public class CheeseWorld implements Runnable {
     //Declare the character objects
     public Mouse jerry;
     public Cheese cheese;
+    // Step 1 for creating an array
+    public Cheese[] manyCheese;
     public Cat tom;
 
     public String winner = "";
@@ -42,15 +46,28 @@ public class CheeseWorld implements Runnable {
     public CheeseWorld() {
 
         setUpGraphics();
+        canvas.addKeyListener(this);
 
         //create (construct) the objects needed for the game
         jerry = new Mouse(200, 300, 0, 0);
         cheese = new Cheese(400, 300, 3, -4);
+        // Step 2 for creating an array
+        // construct array
+        manyCheese = new Cheese[5];
+        // fill array
+        for(int i = 0; i< manyCheese.length; i=i+1) {
+            manyCheese[i] = new Cheese((int)(Math.random()*900),  i*100);
+
+        }
         tom = new Cat(650, 250, 0, 0);
+
 
         //load images
         cheese.pic = Toolkit.getDefaultToolkit().getImage("cheese.gif");
-        jerry.pic = Toolkit.getDefaultToolkit().getImage("jerry.gif");
+        for(int i = 0; i< manyCheese.length; i=i+1) {
+            manyCheese[i].pic = Toolkit.getDefaultToolkit().getImage("cheese.gif");
+        }
+            jerry.pic = Toolkit.getDefaultToolkit().getImage("jerry.gif");
         tom.pic = Toolkit.getDefaultToolkit().getImage("tomCat.png");
 
     } // CheeseWorld()
@@ -74,6 +91,10 @@ public class CheeseWorld implements Runnable {
     public void moveThings() {
         jerry.move();
         cheese.move();
+        for(int i = 0; i <manyCheese.length; i++){
+            manyCheese[i].move();
+        }
+
         tom.move();
     }
 
@@ -92,6 +113,15 @@ public class CheeseWorld implements Runnable {
             tom.isAlive = false;
             winner = "cheese";
             gameOver = true;
+        }
+        for (int i = 0; i <manyCheese.length; i++){
+            if (tom.rec.intersects(manyCheese[i].rec)){
+                if (tom.rec.intersects(cheese.rec)) {
+                    tom.isAlive = false;
+                    winner = "cheese";
+                    gameOver = true;
+                    }
+            }
         }
     }
 
@@ -114,6 +144,10 @@ public class CheeseWorld implements Runnable {
         if (cheese.isAlive == true) {
             g.drawImage(cheese.pic, cheese.xpos, cheese.ypos, cheese.width, cheese.height, null);
         }
+        for(int i = 0; i< manyCheese.length; i=i+1) {
+            g.drawImage(manyCheese[i].pic,manyCheese[i].xpos, manyCheese[i].ypos,
+                    manyCheese[i].width, manyCheese[i].height,null);
+        }
         if (tom.isAlive == true) {
             g.drawImage(tom.pic, tom.xpos, tom.ypos, tom.width, tom.height, null);
         }
@@ -128,6 +162,7 @@ public class CheeseWorld implements Runnable {
 
     //Graphics setup method
     public void setUpGraphics() {
+
         frame = new JFrame("CheeseWorld");   //Create the program window or frame.  Names it.
 
         panel = (JPanel) frame.getContentPane();  //sets up a JPanel which is what goes in the frame
@@ -166,4 +201,50 @@ public class CheeseWorld implements Runnable {
         }
     }
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+        System.out.println("key code: " + keyCode);
+        {
+            if (keyCode == 39) { // right
+                tom.dx = 5;
+            }
+            if (keyCode == 37) { // left
+                tom.dx = -5;
+            }
+            {
+                if (keyCode == 39) { // right
+                    jerry.dx = 5;
+                }
+                if (keyCode == 37) { // left
+                    jerry.dx = -5;
+                    {
+                        if (keyCode == 39) { // right
+                            tom.dy = 4;
+                        }
+                        if (keyCode == 37) { // left
+                            tom.dy = -4;
+
+                            if (keyCode == 37) { // left
+                                jerry.dy = -4;
+                            }
+                                if (keyCode == 39) { // right
+                                    jerry.dy = 4;
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 } // end of class

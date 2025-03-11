@@ -37,6 +37,11 @@ public class Cat {
         xpos = xpos + dx;
         ypos = ypos + dy;
 
+
+        dy = dy + 1;
+        if (ypos > 250) {
+            ypos = 250;
+        }
         if (xpos > 1000 - width || xpos < 0) {
             dx = -dx;
         } // right/left bounce
